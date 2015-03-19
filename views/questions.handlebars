@@ -3,7 +3,7 @@
 \{{#each this}}
  <div class ="topic">
  	<button type="button" disabled="disabled" class="btn btn-default btn-sm">\{{num_ans}} replies</button>
- 	<button type="button" class="btn btn-link"><a href="/questions/\{{id}}">\{{title}}</a></button>
+ 	<button type="button" class="btn btn-link"><a href="/questions/\{{{id}}}">\{{title}}</a></button>
  </div>
 \{{/each}}
 </script>
@@ -47,12 +47,12 @@
 	        dataType: 'json',
 	        method: 'get',
 	        success: function(data) {
-	          	$('.main').html(questionsTemplate(data));  
-	          	setInterval(function() {
- 					getQuestions(); 
- 					}, 3000);
-	        	}
-    		});
+	          	$('.main').html(questionsTemplate(data));  	
+    		}
+    	});
+    	
+ 		setInterval(function() {
+			getQuestions(); }, 5000);
  	}
 
  	$(document).ready(function() {

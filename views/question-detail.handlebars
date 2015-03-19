@@ -1,8 +1,8 @@
 
 <script id="replyTemplate" type="text/x-handlebars-template">
 	<div class='well well-sm'>
-	  <h3 id='title'>\{{title}}</h3>
-	  <p id='description'>\{{body}}</p>    
+	  <h3 id='title'>\{{{title}}}</h3>
+	  <p id='description'>\{{{body}}}</p>    
 	</div>
 
 	\{{#each answer}}
@@ -33,16 +33,8 @@
 	        dataType: 'json',
 	        method: 'get',
 	        success: function(data) {
-	        	console.log(data);
-    			if (data.visual === 1) {
-	          		$('.main').html(replyTemplate(data));
-	          		 setInterval(function() {
-			 			getQuestion();
-			 		}, 3000);
-	          	}
-	          	else {
-	          		//window.location.replace('./');
-	          	}       
+	        	//console.log(data);
+          		$('.main').html(replyTemplate(data));
 	        },
 	         error: function (request, error) {
 		        //console.log(request);
@@ -50,13 +42,16 @@
 		        console.log(error);
 		    }
 	    });
+
+	    setInterval(function() {
+ 			getQuestion();
+ 		}, 3000);
 	};
 
 
 	$(document).ready(function() {
 		replyTemplate = Handlebars.compile($('#replyTemplate').html());
 
-		//setInterval(function(){ alert("Hello"); }, 3000)
 		getQuestion();
 
 		$('#replyForm').on('submit', function(evt) {
