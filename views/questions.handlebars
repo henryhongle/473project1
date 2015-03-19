@@ -1,0 +1,81 @@
+ 
+<script id="questionsTemplate" type="text/x-handlebars-template">
+\{{#each this}}
+ <div class ="topic">
+ 	<button type="button" disabled="disabled" class="btn btn-default btn-sm">\{{num_ans}} replies</button>
+ 	<button type="button" class="btn btn-link"><a href="/questions/\{{id}}">\{{title}}</a></button>
+ </div>
+\{{/each}}
+</script>
+
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#questionModal">Ask a question</button>
+</br></br>
+<div class="modal fade" id="questionModal" tabindex="-1" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Ask a question</h4>
+			</div>
+			<form id="questionForm">
+				<div class="modal-body">
+					<div class="form-group">
+					<label class="control-label">Title:</label>
+					<input type="text" class="form-control" name="title">
+					</div>
+					<div class="form-group">
+					<label class="control-label">Body:</label>
+					<textarea class="form-control" name="description"></textarea>
+					</div>              
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary">Create</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>  
+
+<div class="main"></div>
+
+ <script>
+ 	function getQuestions() {
+ 		$.ajax({
+	        url: '/api/questions',
+	        dataType: 'json',
+	        method: 'get',
+	        success: function(data) {
+	          	$('.main').html(questionsTemplate(data));  
+	          	setInterval(function() {
+ 					getQuestions(); 
+ 					}, 3000);
+	        	}
+    		});
+ 	}
+
+ 	$(document).ready(function() {
+ 		questionsTemplate = Handlebars.compile($('#questionsTemplate').html());
+
+ 		getQuestions();
+ 		
+		$('#questionForm').on('submit', function(evt) {
+			//cancel the default action
+			evt.preventDefault();
+			$.ajax({
+				url: '/api/questions',
+				dataType: 'json',
+				method: 'post',
+				contentType: 'application/x-www-form-urlencoded',
+				data: $('#questionForm').serialize(),
+				success: function(data) {
+					$('.main').html(questionsTemplate(data)); 
+					$('#questionModal').modal('hide');
+					$("#questionForm").get(0).reset();
+				}
+			});
+		});   
+ 	});
+
+ </script>

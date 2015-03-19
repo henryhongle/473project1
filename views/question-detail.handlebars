@@ -1,0 +1,78 @@
+
+<script id="replyTemplate" type="text/x-handlebars-template">
+	<div class='well well-sm'>
+	  <h3 id='title'>\{{title}}</h3>
+	  <p id='description'>\{{body}}</p>    
+	</div>
+
+	\{{#each answer}}
+	<div class= "row">
+		<div class= "answer col-md-10 col-md-offset-2"><pre>\{{this}}</pre></div>
+	</div>
+	\{{/each}}
+</script>
+
+<div class="main"> </div>
+
+<form id="replyForm">
+	<div class ="row">  
+	 <div class="col-md-10 col-md-offset-2">      
+	    <textarea name="replyBody" class="form-control" rows="3" placeholder="Answer the question"></textarea>
+	    </br><button type="submit" class="btn btn-primary">Reply</button>      
+	    </br></br> 
+	    <div> <a href="./">Back to main page </a></div>
+	  </div>
+	</div>
+</form>
+
+<script>
+
+	function getQuestion() {
+		$.ajax({
+	        url: '/api/questions/{{questionID}}',
+	        dataType: 'json',
+	        method: 'get',
+	        success: function(data) {
+	        	console.log(data);
+    			if (data.visual === 1) {
+	          		$('.main').html(replyTemplate(data));
+	          		 setInterval(function() {
+			 			getQuestion();
+			 		}, 3000);
+	          	}
+	          	else {
+	          		//window.location.replace('./');
+	          	}       
+	        },
+	         error: function (request, error) {
+		        //console.log(request);
+		        //window.location.replace('./');
+		        console.log(error);
+		    }
+	    });
+	};
+
+
+	$(document).ready(function() {
+		replyTemplate = Handlebars.compile($('#replyTemplate').html());
+
+		//setInterval(function(){ alert("Hello"); }, 3000)
+		getQuestion();
+
+		$('#replyForm').on('submit', function(evt) {
+			//cancel the defualt action
+			evt.preventDefault();
+			$.ajax({
+				url:'/api/questions/{{questionID}}',
+				dataType: 'json',
+				method: 'post',
+				contentType: 'application/x-www-form-urlencoded',
+				data:$(this).serialize(),
+				success: function(data) {
+					$('.main').html(replyTemplate(data));  
+					$("#replyForm").get(0).reset();
+				}
+			});
+		});
+	});
+</script>
