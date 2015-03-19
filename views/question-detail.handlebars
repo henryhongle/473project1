@@ -27,32 +27,33 @@
 
 <script>
 
-	function getQuestion() {
-		$.ajax({
-	        url: '/api/questions/{{questionID}}',
-	        dataType: 'json',
-	        method: 'get',
-	        success: function(data) {
-	        	//console.log(data);
-          		$('.main').html(replyTemplate(data));
-	        },
-	         error: function (request, error) {
-		        //console.log(request);
-		        //window.location.replace('./');
-		        console.log(error);
-		    }
-	    });
-
-	    setInterval(function() {
- 			getQuestion();
- 		}, 3000);
-	};
-
 
 	$(document).ready(function() {
 		replyTemplate = Handlebars.compile($('#replyTemplate').html());
 
+		function getQuestion() {
+			$.ajax({
+		        url: '/api/questions/{{questionID}}',
+		        dataType: 'json',
+		        method: 'get',
+		        success: function(data) {
+		        	//console.log(data);
+	          		$('.main').html(replyTemplate(data));
+		        },
+		         error: function (request, error) {
+			        //console.log(request);
+			        //window.location.replace('./');
+			        console.log(error);
+			    }
+		    });
+		}
+
 		getQuestion();
+		
+	    setInterval(function() {
+ 			getQuestion();
+ 		}, 3000);
+
 
 		$('#replyForm').on('submit', function(evt) {
 			//cancel the defualt action

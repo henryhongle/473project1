@@ -41,7 +41,7 @@
 <div class="main"></div>
 
  <script>
- 	function getQuestions() {
+ 	/*function getQuestions() {
  		$.ajax({
 	        url: '/api/questions',
 	        dataType: 'json',
@@ -50,15 +50,28 @@
 	          	$('.main').html(questionsTemplate(data));  	
     		}
     	});
-    	
- 		setInterval(function() {
-			getQuestions(); }, 5000);
- 	}
+ 	}*/
 
  	$(document).ready(function() {
  		questionsTemplate = Handlebars.compile($('#questionsTemplate').html());
 
+ 		function getQuestions() {
+	 		$.ajax({
+		        url: '/api/questions',
+		        dataType: 'json',
+		        method: 'get',
+		        success: function(data) {
+		          	$('.main').html(questionsTemplate(data));  	
+	    		}
+	    	});
+	 	}
+
  		getQuestions();
+ 		setInterval(function() {
+			getQuestions();
+		}, 3000);
+
+
  		
 		$('#questionForm').on('submit', function(evt) {
 			//cancel the default action
