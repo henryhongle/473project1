@@ -3,6 +3,7 @@
 \{{#each this}}
  <div class ="topic">
  	<button type="button" disabled="disabled" class="btn btn-default btn-sm">\{{num_ans}} replies</button>
+ 	<button type="button" disabled="disabled" class="btn btn-default btn-sm">\{{timestamp}} seconds</button>
  	<button type="button" class="btn btn-link"><a href="/questions/\{{{id}}}">\{{title}}</a></button>
  </div>
 \{{/each}}
@@ -22,12 +23,13 @@
 				<div class="modal-body">
 					<div class="form-group">
 					<label class="control-label">Title:</label>
-					<input type="text" class="form-control" name="title">
+					<input type="text" class="form-control" name="title" id="title">
 					</div>
 					<div class="form-group">
 					<label class="control-label">Body:</label>
-					<textarea class="form-control" name="description"></textarea>
-					</div>              
+					<textarea class="form-control" name="description" id="description"></textarea>
+					</div>
+					<span id="warning" class="text-danger text-center"> </span>  </br>                
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -41,16 +43,25 @@
 <div class="main"></div>
 
  <script>
- 	/*function getQuestions() {
- 		$.ajax({
-	        url: '/api/questions',
-	        dataType: 'json',
-	        method: 'get',
-	        success: function(data) {
-	          	$('.main').html(questionsTemplate(data));  	
-    		}
-    	});
- 	}*/
+	function formValidation(){
+		var title = document.getElementById("title").value;
+		var desc= document.getElementById("description").value;
+
+		var str1 = " ";
+		if (title == ""|| title.length < 5 || desc =="" || desc.length < 5) {
+			str = "*These fields are required with 5 minimum characters";
+			var warning = document.getElementById("warning");
+			warning.firstChild.nodeValue = str;
+			return false;
+		}
+		else {
+			str = " ";
+			var warning = document.getElementById("warning");
+			warning.firstChild.nodeValue = str;
+
+		}
+		return true;
+	}
 
  	$(document).ready(function() {
  		questionsTemplate = Handlebars.compile($('#questionsTemplate').html());
@@ -61,6 +72,9 @@
 		        dataType: 'json',
 		        method: 'get',
 		        success: function(data) {
+		        	for (var i =data.length-1; i >=0; i--) {
+		        		data[i].timestamp = 300 - Math.round((new Date().getTime() - data[i].timestamp)/1000);
+		        	}
 		          	$('.main').html(questionsTemplate(data));  	
 	    		}
 	    	});
@@ -69,25 +83,27 @@
  		getQuestions();
  		setInterval(function() {
 			getQuestions();
-		}, 3000);
+		}, 1000);
 
 
  		
 		$('#questionForm').on('submit', function(evt) {
 			//cancel the default action
 			evt.preventDefault();
-			$.ajax({
-				url: '/api/questions',
-				dataType: 'json',
-				method: 'post',
-				contentType: 'application/x-www-form-urlencoded',
-				data: $('#questionForm').serialize(),
-				success: function(data) {
-					$('.main').html(questionsTemplate(data)); 
-					$('#questionModal').modal('hide');
-					$("#questionForm").get(0).reset();
-				}
-			});
+			if (formValidation()) {
+				$.ajax({
+					url: '/api/questions',
+					dataType: 'json',
+					method: 'post',
+					contentType: 'application/x-www-form-urlencoded',
+					data: $('#questionForm').serialize(),
+					success: function(data) {
+						$('.main').html(questionsTemplate(data)); 
+						$('#questionModal').modal('hide');
+						$("#questionForm").get(0).reset();
+					}
+				});
+			}
 		});   
  	});
 

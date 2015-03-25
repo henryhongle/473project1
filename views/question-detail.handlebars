@@ -15,9 +15,11 @@
 <div class="main"> </div>
 
 <form id="replyForm">
+
 	<div class ="row">  
-	 <div class="col-md-10 col-md-offset-2">      
-	    <textarea name="replyBody" class="form-control" rows="3" placeholder="Answer the question"></textarea>
+	 <div class="col-md-10 col-md-offset-2"> 
+	    <textarea name="replyBody" class="form-control" rows="3"  id="answer" placeholder="Answer the question"></textarea>
+	    <span id="warning" class="text-danger text-center"> </span>  </br>   
 	    </br><button type="submit" class="btn btn-primary">Reply</button>      
 	    </br></br> 
 	    <div> <a href="./">Back to main page </a></div>
@@ -26,6 +28,25 @@
 </form>
 
 <script>
+
+	function formValidation(){
+		var reply = document.getElementById("answer").value;
+		var str = " ";
+    	if (reply == ""|| reply.length < 5) {
+    		str = "*This field is required with minimum 5 characters";
+    		var warning = document.getElementById("warning");
+    		warning.firstChild.nodeValue = str;
+    		return false;
+    	}
+    	else {
+    		str = " ";
+    		var warning = document.getElementById("warning");
+    		warning.firstChild.nodeValue = str;
+
+    	}
+    	return true;
+		
+	}
 
 
 	$(document).ready(function() {
@@ -52,23 +73,25 @@
 		
 	    setInterval(function() {
  			getQuestion();
- 		}, 3000);
+ 		}, 2000);
 
 
 		$('#replyForm').on('submit', function(evt) {
 			//cancel the defualt action
 			evt.preventDefault();
-			$.ajax({
-				url:'/api/questions/{{questionID}}',
-				dataType: 'json',
-				method: 'post',
-				contentType: 'application/x-www-form-urlencoded',
-				data:$(this).serialize(),
-				success: function(data) {
-					$('.main').html(replyTemplate(data));  
-					$("#replyForm").get(0).reset();
-				}
-			});
+			if (formValidation()) {
+				$.ajax({
+					url:'/api/questions/{{questionID}}',
+					dataType: 'json',
+					method: 'post',
+					contentType: 'application/x-www-form-urlencoded',
+					data:$(this).serialize(),
+					success: function(data) {
+						$('.main').html(replyTemplate(data));  
+						$("#replyForm").get(0).reset();
+					}
+				});
+			}
 		});
 	});
 </script>
