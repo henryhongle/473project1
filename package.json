@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "express": "4.6.1",
-    "body-parser": "1.4.3"
+    "body-parser": "1.4.3",
+    "express3-handlebars": "^0.5.2",
   }
 }

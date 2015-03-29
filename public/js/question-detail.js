@@ -1,48 +1,22 @@
-	function getQuestion() {
-		$.ajax({
-	        url: '/api/questions/{{questionID}}',
-	        dataType: 'json',
-	        method: 'get',
-	        success: function(data) {
-	        	console.log(data);
-    			if (data.visual === 1) {
-	          		$('.main').html(replyTemplate(data));
-	          		 setInterval(function() {
-			 			getQuestion();
-			 		}, 3000);
-	          	}
-	          	else {
-	          		//window.location.replace('./');
-	          	}       
-	        },
-	         error: function (request, error) {
-		        //console.log(request);
-		        //window.location.replace('./');
-		        console.log(error);
-		    }
-	    });
-	};
+// Client-side code
+/* jshint browser: true, jquery: true, curly: true, eqeqeq: true, forin: true, immed: true, indent: 4, latedef: true, newcap: true, nonew: true, quotmark: double, strict: true, undef: true, unused: true */
+ 
+//client side form validation for reply form
+function formValidation(){
+	"use strict";
+	var reply = document.getElementById("answer").value;
+	var warning, str = " ";
+	if (reply === ""|| reply.length < 5) {
+		str = "*This field is required with minimum 5 characters";
+		warning = document.getElementById("warning");
+		warning.firstChild.nodeValue = str;
+		return false;
+	}
+	else {
+		str = " ";
+		warning = document.getElementById("warning");
+		warning.firstChild.nodeValue = str;
 
-
-	$(document).ready(function() {
-		replyTemplate = Handlebars.compile($('#replyTemplate').html());
-
-		//setInterval(function(){ alert("Hello"); }, 3000)
-		getQuestion();
-
-		$('#replyForm').on('submit', function(evt) {
-			//cancel the defualt action
-			evt.preventDefault();
-			$.ajax({
-				url:'/api/questions/{{questionID}}',
-				dataType: 'json',
-				method: 'post',
-				contentType: 'application/x-www-form-urlencoded',
-				data:$(this).serialize(),
-				success: function(data) {
-					$('.main').html(replyTemplate(data));  
-					$("#replyForm").get(0).reset();
-				}
-			});
-		});
-	});
+	}
+	return true;		
+}

@@ -1,17 +1,3 @@
-
-<script id="replyTemplate" type="text/x-handlebars-template">
-	<div class='well well-sm'>
-	  <h3 id='title'>\{{{title}}}</h3>
-	  <p id='description'>\{{{body}}}</p>    
-	</div>
-
-	\{{#each answer}}
-	<div class= "row">
-		<div class= "answer col-md-10 col-md-offset-2"><pre>\{{this}}</pre></div>
-	</div>
-	\{{/each}}
-</script>
-
 <div class="main"> </div>
 
 <form id="replyForm">
@@ -27,67 +13,66 @@
 	</div>
 </form>
 
+<script id="replyTemplate" type="text/x-handlebars-template">
+	<div class='well well-sm'>
+	  <h3 id='title'>\{{{title}}}</h3>
+	  <p id='description'>\{{{body}}}</p>    
+	</div>
+
+	\{{#each answer}}
+	<div class= "row">
+		<div class= "answer col-md-10 col-md-offset-2"><pre>\{{this}}</pre></div>
+	</div>
+	\{{/each}}
+</script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.0/handlebars.min.js"></script>
+	<script src="/js/question-detail.js"></script>
+
 <script>
-
-	function formValidation(){
-		var reply = document.getElementById("answer").value;
-		var str = " ";
-    	if (reply == ""|| reply.length < 5) {
-    		str = "*This field is required with minimum 5 characters";
-    		var warning = document.getElementById("warning");
-    		warning.firstChild.nodeValue = str;
-    		return false;
-    	}
-    	else {
-    		str = " ";
-    		var warning = document.getElementById("warning");
-    		warning.firstChild.nodeValue = str;
-
-    	}
-    	return true;
-		
-	}
-
+	/*
+		Cannot separate those code below to a js file here since we need to use 
+		handlebar template to get the {{questionID}} data from the server side to use for the client side ajax.
+		We can use handlebar template on both server and client side simutanuously.
+	*/
 
 	$(document).ready(function() {
-		replyTemplate = Handlebars.compile($('#replyTemplate').html());
+		//handlebar compiler on client side
+		replyTemplate = Handlebars.compile($("#replyTemplate").html());
 
+		//GET AJAX detail question
 		function getQuestion() {
 			$.ajax({
-		        url: '/api/questions/{{questionID}}',
-		        dataType: 'json',
-		        method: 'get',
+		        url: "/api/questions/{{questionID}}",
+		        dataType: "json",
+		        method: "get",
 		        success: function(data) {
-		        	//console.log(data);
-	          		$('.main').html(replyTemplate(data));
-		        },
-		         error: function (request, error) {
-			        //console.log(request);
-			        //window.location.replace('./');
-			        console.log(error);
-			    }
+	          		$(".main").html(replyTemplate(data));
+		        }
 		    });
 		}
 
+		//update the question every 2 second to check for new reply
 		getQuestion();
-		
 	    setInterval(function() {
  			getQuestion();
  		}, 2000);
 
-
-		$('#replyForm').on('submit', function(evt) {
+	    //POST AJAX for create a new reply on a particualr question
+		$("#replyForm").on("submit", function(evt) {
 			//cancel the defualt action
 			evt.preventDefault();
 			if (formValidation()) {
 				$.ajax({
-					url:'/api/questions/{{questionID}}',
-					dataType: 'json',
-					method: 'post',
-					contentType: 'application/x-www-form-urlencoded',
+					url:"/api/questions/{{questionID}}",
+					dataType: "json",
+					method: "post",
+					contentType: "application/x-www-form-urlencoded",
 					data:$(this).serialize(),
 					success: function(data) {
-						$('.main').html(replyTemplate(data));  
+						$(".main").html(replyTemplate(data));  
 						$("#replyForm").get(0).reset();
 					}
 				});
